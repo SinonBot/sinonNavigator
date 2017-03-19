@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Sinon Navigator</title>
+    <script>window.$ = window.jQuery = require('jquery');</script>
+    <script>
+      $(document).ready(function () {
+        $(function(){
+          $("#includeHeader").load("./imports/header.html");
+        });
+      });
+    </script>
+
+  </head>
+  <div id="includeHeader"></div>
+  <body>
+    <h1>This is the extreamly painfull start of my discord client 👌 </h1>
+    <h1>Hello World!</h1>
+    <!-- All of the Node.js APIs are available in this renderer process. -->
+    We are using Node.js <script>document.write(process.versions.node)</script>,
+    Chromium <script>document.write(process.versions.chrome)</script>,
+    and Electron <script>document.write(process.versions.electron)</script>.
+    <a href="discord/loggedin.html">Log In</a>
+  </body>
+</html>

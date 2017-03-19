@@ -1,0 +1,26 @@
+{
+  "name": "sinon_navigator",
+  "version": "0.1.0",
+  "description": "A discord navigator tool for discord bots",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": "https://github.com/SinonBot/sinonNavigator",
+  "keywords": [
+    "Electron",
+    "Discord",
+    "Rasakino",
+    "SinonBot",
+    "Sinon"
+  ],
+  "author": "Rasakino",
+  "devDependencies": {
+    "electron": "^1.4.1"
+  },
+  "dependencies": {
+    "discord.js": "^11.0.0",
+    "jquery": "^3.2.0",
+    "marked": "^0.3.6"
+  }
+}
