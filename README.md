@@ -22,10 +22,10 @@ Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c6
 
 See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
+## Credits
+* **discord devlopers** for making the platform, much love
+* **hydrabolt** and the **community** for creating and maintaining discord.js
+
 ## License
 
 This project is licensed underCreative Commons Attribution-NonCommercial-ShareAlike 4.0 - see the [Here](https://creativecommons.org/licenses/by-nc-sa/4.0/) for details
-
-## Credits
-. to discord devlopers for making the platform, much love
-. to hydrabolt and the community for creating and maintaining discord.js
