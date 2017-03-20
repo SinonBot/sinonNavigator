@@ -11,3 +11,6 @@ ehthumbs.db
 # Node
 /node_modules
 *.log
+
+# VSc
+/.vscode
