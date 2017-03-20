@@ -1,5 +1,5 @@
 window.$ = window.jQuery = require('jquery');
-const ipc = require('electron').ipcRenderer
+const ipc = require('electron').ipcRenderer;
 
 $(document).ready(function () {
 

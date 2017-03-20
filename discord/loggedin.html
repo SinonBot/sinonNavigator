@@ -1,155 +1,66 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-  <meta charset="UTF-8">
-  <title>Sinon Navigator</title>
-  <script>window.$ = window.jQuery = require('jquery');</script>
-  <link rel="stylesheet" href="../imports/custom.css">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-  <script>
-    const ipc = require('electron').ipcRenderer
-    var path = require('path')
-    var url = require('url')
-    var loginToken = require("./../authFile.json");
-    var startDiscord = require('./initDiscord.js');
-    var botToken = "";
-    var marked = require('marked');
-    marked.setOptions({
-      renderer: new marked.Renderer(),
-      gfm: true,
-      tables: false,
-      breaks: false,
-      pedantic: false,
-      sanitize: true,
-      smartLists: true,
-      smartypants: true
-    });
-  </script>
-</head>
-
-<body>
-  <!-- Body imported -->
-  <div id="bodyImport"></div>
-</body>
-
+   <head>
+      <meta charset="UTF-8">
+      <title>Sinon Navigator</title>
+      <script>window.$ = window.jQuery = require('jquery');</script>
+      <link rel="stylesheet" href="../imports/custom.css">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+      <script></script>
+   </head>
+   <body>
+      <nav class="navbar navbar-default" style="-webkit-app-region: drag">
+         <div class="container-fluid">
+            <div class="navbar-header">
+               <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
+                  aria-expanded="false">
+               <span class="sr-only">Toggle navigation</span>
+               <span class="icon-bar"></span>
+               <span class="icon-bar"></span>
+               <span class="icon-bar"></span>
+               </button>
+               <a id="navbar-brand" class="navbar-brand" href="#">ERROR</a>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+               <ul class="nav navbar-nav">
+                  <li><a href="#">DM's</a></li>
+               </ul>
+               <form class="navbar-form navbar-left">
+                  <div class="form-group">
+                     <input style="-webkit-app-region: no-drag" type="text" class="form-control" placeholder="Search for guilds">
+                     <button style="-webkit-app-region: no-drag" type="submit" class="btn btn-default">Submit</button>
+                     <button style="-webkit-app-region: no-drag" onClick="logout()" class="btn btn-default">Logout</button>
+                  </div>
+               </form>
+               <ul class="navbar-form navbar-right">
+                  <div class="form-group">
+                     <button style="-webkit-app-region: no-drag" type="submit" class="btn btn-alt" id="navbar-guilds">Guilds: </button>
+                     <button style="-webkit-app-region: no-drag" type="submit" class="btn btn-alt" id="navbar-channels">Channels: </button>
+                     <button style="-webkit-app-region: no-drag" type="submit" class="btn btn-alt" id="navbar-users">Users: </button>
+                     <button style="-webkit-app-region: no-drag" type="submit" class="btn btn-default">Sinon Navigator created by Rasakino</button>
+                     <button style="-webkit-app-region: no-drag" id="minamise" type="submit" class="btn btn-default">_</button>
+                     <button style="-webkit-app-region: no-drag" id="minmax" type="submit" class="btn btn-default">Ξ</button>
+                     <button style="-webkit-app-region: no-drag" id="close" type="submit" class="btn btn-default">X</button>
+                  </div>
+               </ul>
+            </div>
+         </div>
+      </nav>
+      <div class="full-div">
+         <div class="col-sm-2 guild">
+            <div class="sidebar-module">
+               <h4>Guilds</h4>
+               <ol id="guildList" class="list-unstyled"></ol>
+            </div>
+         </div>
+         <div class="col-sm-10 scroll-div">
+            <div class="masterContainer">
+               <ul id="inboundMessages"></ul>
+            </div>
+         </div>
+      </div>
+   </body>
 </html>
-
-<script>
-    var sinonData = {};
-    sinonData = {};
-
-    function printMessage(message) {
-
-      if (!sinonData["ID" + message.guild.id]) {
-        sinonData["ID" + message.guild.id] = {}
-      }
-      if (!sinonData["ID" + message.guild.id]["ID" + message.channel.id]) {
-        sinonData["ID" + message.guild.id]["ID" + message.channel.id] = {};
-        sinonData["ID" + message.guild.id]["ID" + message.channel.id]["lastMessageAuthor"] = "";
-        sinonData["ID" + message.guild.id]["ID" + message.channel.id]["messages"] = [];
-      }
-
-      sinonData["ID" + message.guild.id]["ID" + message.channel.id]["messages"].push(message);
-
-      if (sinonData["ID" + message.guild.id]["ID" + message.channel.id]["lastMessageAuthor"] != message.author.id) {
-        var displayName = "";
-        if (message.member) {
-          displayName = message.member.displayName
-        } else {
-          displayName = message.author.username
-        };
-        $('#inboundMessages').append(`<li class="messages"><legend>` + displayName + ' - ' + message.author.id + `</legend></li>`)
-      }
-
-      sinonData["ID" + message.guild.id]["ID" + message.channel.id]["lastMessageAuthor"] = message.author.id;
-      if (message.attachments.first()) {
-        console.log(message.attachments.first().url)
-        $('#inboundMessages').append($(`<li class="messages" ></li>`).text("Guild: " + message.guild.name + " Author: " + displayName + " Message: " + marked(message.content)))
-        $('#inboundMessages').append('<li class="messages image"><img src="' + message.attachments.first().url + '"></li>')
-      } else {
-        //$('#inboundMessages').append($(`<li class="messages" ></li>`).text("Guild: " + message.guild.name + " Author: " + displayName + " Message: " + marked(message.content)))
-        $('#inboundMessages').append(`<li class="messages" >` + marked(message.content) + `</li>`)
-      }
-
-      document.getElementById('inboundMessages').scrollIntoView(false);
-    }
-
-    function logout() {
-      ipc.sendSync('changePage', {page: "loggedout"})
-    }
-
-    function displayGuild(guildID) {
-      console.log("Displaying info for " + guildID);
-      console.log(JSON.stringify(sinonData["ID" + guildID], null, 4))
-    }
-
-    function refreshNavbar(DiscordClient, event) {
-      console.log("Update event from:" + event);
-      document.getElementById("navbar-channels").innerHTML = "Channels: " + DiscordClient.channels.size;
-      document.getElementById("navbar-guilds").innerHTML = "Guilds: " + DiscordClient.guilds.size;
-      document.getElementById("navbar-users").innerHTML = "Users: " + DiscordClient.users.size;
-    };
-
-      $("#bodyImport").load("./masterPage.html", function () {
-        console.log("imported body...");
-      });
-
-    $(window).on("load", function () {
-
-    document.getElementById('minamise').addEventListener('click', function () {
-        ipc.sendSync('pageEvent', "minamise")
-    })
-
-    document.getElementById('minmax').addEventListener('click', function () {
-        ipc.sendSync('pageEvent', "minmax")
-    })
-    
-    document.getElementById('close').addEventListener('click', function () {
-        ipc.sendSync('pageEvent', "close")
-    })
-
-
-      console.log("window loaded");       
-      if (loginToken.discordToken == "") {
-        console.log("sending request for token")
-        botToken = ipc.sendSync('getToken', null)
-      } else {
-        botToken = loginToken.discordToken
-      }
-      //console.log(botToken)
-      startDiscord.initDiscord(botToken).then(DiscordClient => {
-        var channels
-        // Discord is ready, time to do shit...
-        $('#inboundMessages').append("<li>Logged in 👌</li>")
-        document.getElementById("navbar-brand").innerHTML = DiscordClient.user.username;
-        refreshNavbar(DiscordClient, "Ready")
-        for (var guild of DiscordClient.guilds) {
-          //console.log(guild[1])
-          var theFn = 'onClick="displayGuild(' + guild[1].id + ')"'
-          channels = '';
-          //$('#guildList').append('<li><a class="guildList" ' + theFn + ' ><img class="icons" align="left" src="' + guild[1].iconURL + '">' + guild[1] + `</a></li>`)
-          guild[1].channels.forEach((element, index, array) => {
-
-            if (element.type == "text") {
-              channels = channels + '<li><a href="#">' + element.name + '</a></li>'
-            }
-          })
-
-          $('#guildList').append(
-            '<div class="dropdown">' +
-            '<button class="dropdown-toggle guildList" data-toggle="dropdown"><img class="icons" src="' + guild[1].iconURL + '">' + guild[1] +
-            '<span class="caret"></span></button>' +
-            '<ul class="dropdown-menu">' +
-            channels +
-            '</ul>' +
-            '</div>'
-          )
-        };
-
-      }).catch(console.error)
-    });
-
-</script>
+<script src="loggedin.js"></script>
