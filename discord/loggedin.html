@@ -5,11 +5,13 @@
   <meta charset="UTF-8">
   <title>Sinon Navigator</title>
   <script>
+    const ipc = require('electron').ipcRenderer
     window.$ = window.jQuery = require('jquery');
     var path = require('path')
     var url = require('url')
     var loginToken = require("./../authFile.json");
     var startDiscord = require('./initDiscord.js');
+    var botToken = "";
     var marked = require('marked');
     marked.setOptions({
       renderer: new marked.Renderer(),
@@ -55,21 +57,31 @@
       sinonData["ID" + message.guild.id]["ID" + message.channel.id]["messages"].push(message);
 
       if (sinonData["ID" + message.guild.id]["ID" + message.channel.id]["lastMessageAuthor"] != message.author.id) {
-        $('#inboundMessages').append(`<li class="messages"><legend>` + message.member.displayName + ' - ' + message.member.id + `</legend></li>`)
+        var displayName = "";
+        if (message.member) {
+          displayName = message.member.displayName
+        } else {
+          displayName = message.author.username
+        };
+        $('#inboundMessages').append(`<li class="messages"><legend>` + displayName + ' - ' + message.author.id + `</legend></li>`)
       }
+
       sinonData["ID" + message.guild.id]["ID" + message.channel.id]["lastMessageAuthor"] = message.author.id;
       if (message.attachments.first()) {
         console.log(message.attachments.first().url)
-        $('#inboundMessages').append($(`<li class="messages" ></li>`).text("Guild: " + message.guild.name + " Author: " + message.member.displayName + " Message: " + marked(message.content)))
+        $('#inboundMessages').append($(`<li class="messages" ></li>`).text("Guild: " + message.guild.name + " Author: " + displayName + " Message: " + marked(message.content)))
         $('#inboundMessages').append('<li class="messages image"><img src="' + message.attachments.first().url + '"></li>')
       } else {
-        //$('#inboundMessages').append($(`<li class="messages" ></li>`).text("Guild: " + message.guild.name + " Author: " + message.member.displayName + " Message: " + marked(message.content)))
+        //$('#inboundMessages').append($(`<li class="messages" ></li>`).text("Guild: " + message.guild.name + " Author: " + displayName + " Message: " + marked(message.content)))
         $('#inboundMessages').append(`<li class="messages" >` + marked(message.content) + `</li>`)
       }
 
       document.getElementById('inboundMessages').scrollIntoView(false);
     }
 
+    function logout() {
+      ipc.sendSync('changePage', {page: "loggedout"})
+    }
 
     function displayGuild(guildID) {
       console.log("Displaying info for " + guildID);
@@ -88,9 +100,15 @@
         console.log("imported body...");
       });
 
-
-      console.log("window loaded");
-      startDiscord.initDiscord(loginToken.discordToken).then(DiscordClient => {
+      console.log("window loaded");       
+      if (loginToken.discordToken == "") {
+        console.log("sending request for token")
+        botToken = ipc.sendSync('getToken', null)
+      } else {
+        botToken = loginToken.discordToken
+      }
+      //console.log(botToken)
+      startDiscord.initDiscord(botToken).then(DiscordClient => {
         var channels
         // Discord is ready, time to do shit...
         $('#inboundMessages').append("<li>Logged in 👌</li>")
@@ -102,9 +120,9 @@
           channels = '';
           //$('#guildList').append('<li><a class="guildList" ' + theFn + ' ><img class="icons" align="left" src="' + guild[1].iconURL + '">' + guild[1] + `</a></li>`)
           guild[1].channels.forEach((element, index, array) => {
-            
+
             if (element.type == "text") {
-              channels = channels + '<li><a href="#">'+element.name+'</a></li>'
+              channels = channels + '<li><a href="#">' + element.name + '</a></li>'
             }
           })
 

@@ -1,26 +1,52 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Sinon Navigator</title>
-    <script>window.$ = window.jQuery = require('jquery');</script>
-    <script>
-      $(document).ready(function () {
-        $(function(){
-          $("#includeHeader").load("./imports/header.html");
-        });
-      });
-    </script>
+   <head>
+      <meta charset="UTF-8">
+      <title>Sinon Navigator</title>
+      <script>
+         window.$ = window.jQuery = require('jquery');
+         const ipc = require('electron').ipcRenderer
+         
+         $(document).ready(function () {
+              const syncMsgBtn = document.getElementById('sync-msg')
+              syncMsgBtn.addEventListener('click', function () {
+                const reply = ipc.sendSync('synchronous-message', 'ping')
+                const message = `Synchronous message reply: ${reply}`
+                document.getElementById('sync-reply').innerHTML = message
+              })
+              
+              const loginBtn = document.getElementById('sync-login')
+              loginBtn.addEventListener('click', function () {
+                ipc.sendSync('changePage', {page: "loggedin",token: document.getElementById('pwd').value})
+              })
+         });
+         
+         function login() {
+           $("#includeHeader").load("discord/loggedin.html");
+         }
+      </script>
+   </head>
+   <div id="includeHeader"></div>
+   <body>
+      <div class="demo-controls">
+         <button class="demo-button" id="sync-msg">Ping</button>
+         <span class="demo-response" id="sync-reply"></span>
+      </div>
+      <h1>This is the extreamly painfull start of my discord client 👌 </h1>
+      <h1>Hello World!</h1>
+      <!-- All of the Node.js APIs are available in this renderer process. -->
+      We are using Node.js <script>document.write(process.versions.node)</script>,
+      Chromium <script>document.write(process.versions.chrome)</script>,
+      and Electron <script>document.write(process.versions.electron)</script>.
+      <div class="demo-controls">
 
-  </head>
-  <div id="includeHeader"></div>
-  <body>
-    <h1>This is the extreamly painfull start of my discord client 👌 </h1>
-    <h1>Hello World!</h1>
-    <!-- All of the Node.js APIs are available in this renderer process. -->
-    We are using Node.js <script>document.write(process.versions.node)</script>,
-    Chromium <script>document.write(process.versions.chrome)</script>,
-    and Electron <script>document.write(process.versions.electron)</script>.
-    <a href="discord/loggedin.html">Log In</a>
-  </body>
+          <div class="form-group">
+            <label for="pwd">Token:</label>
+            <input type="password" class="form-control" id="pwd">
+          </div>
+  
+         <button class="demo-button" id="sync-login">Log In</button>
+         <span class="demo-response" id="sync-reply"></span>
+      </div>
+   </body>
 </html>
