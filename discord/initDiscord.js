@@ -2,10 +2,12 @@ Discord = require("discord.js");
 const ipc = require('electron').ipcRenderer
 
 module.exports = {
-    initDiscord: function (loginToken) {
+    initDiscord: function () {
         return new Promise(function (fulfill, reject) {
+
+            botToken = ipc.sendSync('getToken', null);
             global.DiscordClient = new Discord.Client({ revive: true });
-            DiscordClient.login(loginToken)
+            DiscordClient.login(botToken)
                 .then(() => {
                     console.log("Logged in 👌")
                 })

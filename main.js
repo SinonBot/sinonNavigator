@@ -4,8 +4,8 @@ const BrowserWindow = electron.BrowserWindow
 const ipc = require('electron').ipcMain
 const path = require('path')
 const url = require('url')
+const sinonAuth = require("./authFile.json");
 
-var loginToken;
 let mainWindow
 
 function createWindow() {
@@ -55,11 +55,16 @@ ipc.on('synchronous-message', function (event, arg) {
 })
 
 ipc.on('getToken', function (event, arg) {
+
+  if (loginToken === "" || loginToken === undefined || loginToken === null) {
+    // get token from file
+    loginToken = sinonAuth.discordToken
+  };
   event.returnValue = loginToken
 })
 
 ipc.on('changePage', function (event, arg) {
-  
+
   if (arg["page"] == "loggedin") {
     loginToken = arg["token"]
     mainWindow.loadURL(url.format({

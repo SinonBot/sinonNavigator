@@ -1,7 +1,6 @@
 const ipc = require('electron').ipcRenderer;
 var path = require('path');
 var url = require('url');
-var loginToken = require("./../authFile.json");
 var startDiscord = require('./initDiscord.js');
 var botToken = "";
 var marked = require('marked');
@@ -77,14 +76,7 @@ $(window).on("load", function () {
     });
 
     console.log("window loaded");
-    if (loginToken.discordToken == "") {
-        console.log("sending request for token");
-        botToken = ipc.sendSync('getToken', null);
-    } else {
-        botToken = loginToken.discordToken;
-    };
-
-    startDiscord.initDiscord(botToken).then(DiscordClient => {
+    startDiscord.initDiscord().then(DiscordClient => {
         var channels;
         $('#inboundMessages').append("<li>Logged in 👌</li>");
         document.getElementById("navbar-brand").innerHTML = DiscordClient.user.username;
