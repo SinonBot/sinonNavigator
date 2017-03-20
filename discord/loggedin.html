@@ -93,10 +93,24 @@
       document.getElementById("navbar-users").innerHTML = "Users: " + DiscordClient.users.size;
     };
 
-    $(window).on("load", function () {
       $("#bodyImport").load("./masterPage.html", function () {
         console.log("imported body...");
       });
+
+    $(window).on("load", function () {
+
+    document.getElementById('minamise').addEventListener('click', function () {
+        ipc.sendSync('pageEvent', "minamise")
+    })
+
+    document.getElementById('minmax').addEventListener('click', function () {
+        ipc.sendSync('pageEvent', "minmax")
+    })
+    
+    document.getElementById('close').addEventListener('click', function () {
+        ipc.sendSync('pageEvent', "close")
+    })
+
 
       console.log("window loaded");       
       if (loginToken.discordToken == "") {

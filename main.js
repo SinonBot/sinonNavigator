@@ -1,19 +1,16 @@
 const electron = require('electron')
-// Module to control application life.
 const electonCore = electron.app
-// Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow
-
+const ipc = require('electron').ipcMain
 const path = require('path')
 const url = require('url')
+
 var loginToken;
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
 function createWindow() {
   // Create the browser window.
-  mainWindow = new BrowserWindow({ width: 800, height: 600 })
+  mainWindow = new BrowserWindow({ width: 800, height: 600, frame: false })
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
@@ -56,7 +53,24 @@ electonCore.on('activate', function () {
   }
 })
 
-const ipc = require('electron').ipcMain
+
+
+ipc.on('pageEvent', function (event, arg) {
+  if (arg == "close") {
+    mainWindow.close();
+  } else if (arg == "minmax") {
+    if (mainWindow.isMaximized()) {
+      mainWindow.unmaximize()
+    } else {
+      mainWindow.maximize()
+    };
+  } else if (arg == "minamise") {
+    mainWindow.minimize()
+  } else {
+    console.error("Unknown pageEvent: " + arg)
+  };
+  event.returnValue = arg;
+});
 
 ipc.on('synchronous-message', function (event, arg) {
   event.returnValue = 'pong'
