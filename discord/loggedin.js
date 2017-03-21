@@ -7,6 +7,8 @@ var marked = require('marked');
 marked.setOptions({ renderer: new marked.Renderer(), gfm: true, tables: false, breaks: false, pedantic: false, sanitize: true, smartLists: false, smartypants: false });
 var sinonData = {};
 sinonData = {};
+var guildWatch = "globalGuild";
+var channelWatch = "globalChannel";
 
 function printMessage(message) {
 
@@ -22,14 +24,13 @@ function printMessage(message) {
 
     sinonData["ID" + message.guild.id]["ID" + message.channel.id]["messages"].push(message);
 
+    if (message.guild.id == guildWatch || guildWatch == "globalGuild") { } else { return }
+    if (message.channel.id == channelWatch || channelWatch == "globalChannel") { } else { return }
+
     if (sinonData["ID" + message.guild.id]["ID" + message.channel.id]["lastMessageAuthor"] != message.author.id) {
         var displayName = "";
-        if (message.member) {
-            displayName = message.member.displayName;
-        } else {
-            displayName = message.author.username;
-        };
-        $('#inboundMessages').append(`</br><li class="messages"><legend>` + displayName + ' - ' + message.author.id + `</legend></li>`);
+        if (message.member) { displayName = message.member.displayName } else { displayName = message.author.username };
+        $('#inboundMessages').append(`</br><li class="messages"><legend>` + displayName + ' - ' + message.author.id + ` - ` + message.channel.name + ` - ` + message.guild.name + `</legend></li>`);
     };
 
     sinonData["ID" + message.guild.id]["ID" + message.channel.id]["lastMessageAuthor"] = message.author.id;
@@ -60,6 +61,15 @@ function refreshNavbar(DiscordClient, event) {
     document.getElementById("navbar-users").innerHTML = "Users: " + DiscordClient.users.size;
 };
 
+function displayGuilds(guildID, channelID) {
+    if (guildID == "globalGuild") {
+        guildWatch = "globalGuild";
+        channelWatch = "globalChannel";
+    } else {
+        guildWatch = guildID;
+        channelWatch = channelID;
+    }
+}
 
 $(window).on("load", function () {
 
@@ -80,63 +90,56 @@ $(window).on("load", function () {
         var channels;
         document.getElementById("navbar-brand").innerHTML = DiscordClient.user.username;
         refreshNavbar(DiscordClient, "Ready");
-
-        $('#guildList').append(
-            '<div class="panel-group" id="accordion">'
-        );
-
-        var guildCount = 0;
-        for (var guild of DiscordClient.guilds) {
-            guildCount++
-            var theFn = 'onClick="displayGuild(' + guild[1].id + ')"';
-            var iconURL
-            channels = '';
-
-            guild[1].channels.forEach((element, index, array) => {
-                if (element.type == "text") {
-                    channels = channels + '<li><a href="#">' + element.name + '</a></li>';
-                };
-            });
-
-            if (guild[1].iconURL) {
-                iconURL = guild[1].iconURL;
-            } else {
-                iconURL = "noAvatar.jpg";
-            };
+        $('#guildList').append('<div class="panel-group" id="accordion">');
 
             $('#guildList').append(
                 '<div class="panel panel-default">' +
                 '<div class="panel-heading">' +
                 '<h4 class="panel-title">' +
-                '<a data-toggle="collapse" data-parent="#accordion" href="#collapse'+guildCount+'">' +
-
-                '<img class="icons" src="'+iconURL+'">'+
-                '<div style="vertical-align:middle; display:inline;">'+
-                ''+guild[1]+'</a>' +
-                
+                '<a data-toggle="collapse" data-parent="#accordion" onClick="displayGuilds(`globalGuild`, `globalChannel`)">' +
+                '<img class="icons" src="noAvatar.jpg">' +
+                '<div style="vertical-align:middle; display:inline;">' +
+                'Global Messages</a>' +
                 '</h4>' +
                 '</div>' +
-                '<div id="collapse'+guildCount+'" class="panel-collapse collapse">' +
+                '</div>'
+            );
+            
+        var guildCount = 0;
+        for (var guild of DiscordClient.guilds) {
+            guildCount++
+            var iconURL
+            channels = '';
+
+            guild[1].channels.forEach((element, index, array) => {
+                if (element.type == "text") {
+                    channels = channels + '<li><a onClick="displayGuilds('+guild[1].id+', '+element.id+')">' + element.name + '</a></li>'
+                };
+            });
+
+            if (guild[1].iconURL) { iconURL = guild[1].iconURL } else { iconURL = "noAvatar.jpg" };
+
+
+            $('#guildList').append(
+                '<div class="panel panel-default">' +
+                '<div class="panel-heading">' +
+                '<h4 class="panel-title">' +
+                '<a data-toggle="collapse" data-parent="#accordion" href="#collapse' + guildCount + '">' +
+                '<img class="icons" src="' + iconURL + '">' +
+                '<div style="vertical-align:middle; display:inline;">' +
+                '' + guild[1] + '</a>' +
+                '</h4>' +
+                '</div>' +
+                '<div id="collapse' + guildCount + '" class="panel-collapse collapse">' +
                 '<div class="panel-body">' +
                 channels +
+                '</div>' +
+                '<div class="panel-body">' +
+                '<li><a onClick="displayGuilds('+guild[1].id+', `globalChannel`)">Guild Messages</a></li>' +
                 '</div>' +
                 '</div>' +
                 '</div>'
             );
-
-            /*
-            
-                        $('#guildList').append(
-                            '<div class="dropdown">' +
-                            '<img id="guildIcon" class="icons" src="' + guild[1].iconURL + '">' +
-                            '<button class="dropdown-toggle guildList" data-toggle="dropdown">' + guild[1] +
-                            '<span class="caret"></span></button>' +
-                            '<ul class="dropdown-menu">' +
-                            channels +
-                            '</ul>' +
-                            '</div>'
-                        );
-            */
         };
         $('#guildList').append(
             '</div>'
