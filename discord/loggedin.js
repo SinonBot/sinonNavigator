@@ -29,7 +29,7 @@ function printMessage(message) {
         } else {
             displayName = message.author.username;
         };
-        $('#inboundMessages').append(`<li class="messages"><legend>` + displayName + ' - ' + message.author.id + `</legend></li>`);
+        $('#inboundMessages').append(`</br><li class="messages"><legend>` + displayName + ' - ' + message.author.id + `</legend></li>`);
     };
 
     sinonData["ID" + message.guild.id]["ID" + message.channel.id]["lastMessageAuthor"] = message.author.id;
@@ -78,12 +78,18 @@ $(window).on("load", function () {
     console.log("window loaded");
     startDiscord.initDiscord().then(DiscordClient => {
         var channels;
-        $('#inboundMessages').append("<li>Logged in 👌</li>");
         document.getElementById("navbar-brand").innerHTML = DiscordClient.user.username;
         refreshNavbar(DiscordClient, "Ready");
-        for (var guild of DiscordClient.guilds) {
 
+        $('#guildList').append(
+            '<div class="panel-group" id="accordion">'
+        );
+
+        var guildCount = 0;
+        for (var guild of DiscordClient.guilds) {
+            guildCount++
             var theFn = 'onClick="displayGuild(' + guild[1].id + ')"';
+            var iconURL
             channels = '';
 
             guild[1].channels.forEach((element, index, array) => {
@@ -92,16 +98,49 @@ $(window).on("load", function () {
                 };
             });
 
+            if (guild[1].iconURL) {
+                iconURL = guild[1].iconURL;
+            } else {
+                iconURL = "noAvatar.jpg";
+            };
+
             $('#guildList').append(
-                '<div class="dropdown">' +
-                '<button class="dropdown-toggle guildList" data-toggle="dropdown"><img class="icons" src="' + guild[1].iconURL + '">' + guild[1] +
-                '<span class="caret"></span></button>' +
-                '<ul class="dropdown-menu">' +
+                '<div class="panel panel-default">' +
+                '<div class="panel-heading">' +
+                '<h4 class="panel-title">' +
+                '<a data-toggle="collapse" data-parent="#accordion" href="#collapse'+guildCount+'">' +
+
+                '<img class="icons" src="'+iconURL+'">'+
+                '<div style="vertical-align:middle; display:inline;">'+
+                ''+guild[1]+'</a>' +
+                
+                '</h4>' +
+                '</div>' +
+                '<div id="collapse'+guildCount+'" class="panel-collapse collapse">' +
+                '<div class="panel-body">' +
                 channels +
-                '</ul>' +
+                '</div>' +
+                '</div>' +
                 '</div>'
             );
+
+            /*
+            
+                        $('#guildList').append(
+                            '<div class="dropdown">' +
+                            '<img id="guildIcon" class="icons" src="' + guild[1].iconURL + '">' +
+                            '<button class="dropdown-toggle guildList" data-toggle="dropdown">' + guild[1] +
+                            '<span class="caret"></span></button>' +
+                            '<ul class="dropdown-menu">' +
+                            channels +
+                            '</ul>' +
+                            '</div>'
+                        );
+            */
         };
+        $('#guildList').append(
+            '</div>'
+        );
 
     }).catch(console.error)
 });

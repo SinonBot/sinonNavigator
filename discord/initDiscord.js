@@ -38,17 +38,13 @@ module.exports = {
             //  DiscordClient.on("guildMemberUpdate", (oldMember, newMember) => {});
             // DiscordClient.on("guildUnavailable", (guild) => { discordFunction["handleEvents"].run("guildUnavailable", sinonBase, sinonData, guild) });
             //  DiscordClient.on("guildUpdate", (oldGuild, newGuild) => {});
-            DiscordClient.on("message", (message) => {
-                //console.log(message)
-                printMessage(message);
-            });
+            DiscordClient.on("message", (message) => { printMessage(message) });
             //  DiscordClient.on("messageDeleteBulk", (messages) => {});
             //  DiscordClient.on("messageReactionAdd", (messageReaction, user) => {});
             //  DiscordClient.on("messageReactionRemove", (messageReaction, user) => {});
             //  DiscordClient.on("messageReactionRemoveAll", (messageReaction) => {});
             // DiscordClient.on("messageUpdate", (oldMessage, newMessage) => { discordFunction["handleEvents"].run("messageUpdate", sinonBase, sinonData, oldMessage, newMessage) });
             //  DiscordClient.on("presenceUpdate", (oldMember, newMember) => {});
-            DiscordClient.on("ready", () => { fulfill(DiscordClient); console.log("Logged in and ready for work.") });
             DiscordClient.on("reconnecting", () => { console.log("reconnecting to discord") });
             //  DiscordClient.on("roleCreate", (role) => {});
             //  DiscordClient.on("roleDelete", (role) => {});
@@ -59,7 +55,8 @@ module.exports = {
             //  DiscordClient.on("userUpdate", (oldUser, newUser) => {});
             //  DiscordClient.on("voiceStateUpdate", (oldMember, newMember) => {});
             DiscordClient.on("warn", (info) => { console.warn(info) });
-
+            
+            DiscordClient.on("ready", () => { console.log("Logged in and ready for work."); fulfill(DiscordClient) });
         });
     }
 }
